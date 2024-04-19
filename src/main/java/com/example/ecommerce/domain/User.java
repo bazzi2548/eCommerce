@@ -31,6 +31,8 @@ public class User {
     @Column(nullable = false)
     private String phoneNumber;
 
+    private String role;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -41,6 +43,12 @@ public class User {
     private List<Address> addresses = new ArrayList<>();
 
     protected User() {
+    }
+
+    public User(String email, String password, String role) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
     }
 
     public User(SaveUserRequest request, BCryptPasswordEncoder bCryptPasswordEncoder) {
