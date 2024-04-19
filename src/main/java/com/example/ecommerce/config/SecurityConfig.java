@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -40,37 +41,21 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        //csrf disable
-        http
-                .csrf((auth) -> auth.disable());
-
-        //Form 로그인 방식 disable
-        http
-                .formLogin((auth) -> auth.disable());
-
-        //http basic 인증 방식 disable
-        http
-                .httpBasic((auth) -> auth.disable());
-
-        //경로별 인가 작업
-        http
+        return http
+                .csrf(AbstractHttpConfigurer::disable) //csrf disable
+                .cors(AbstractHttpConfigurer::disable) //cors disable
+                .formLogin(AbstractHttpConfigurer::disable) //Form 로그인 방식 disable
+                .httpBasic(AbstractHttpConfigurer::disable) //http basic 인증 방식 disable
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/login", "/", "/sign-up").permitAll()
                         .requestMatchers("/my-page").hasAuthority("customer")
-                        .anyRequest().authenticated());
-
-        //JWT 필터 등록
-        http
-                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
-
-        http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
-        //세션 설정
-        http
+                        .requestMatchers("/reissue").permitAll()
+                        .anyRequest().authenticated()) //경로별 인가 작업
+                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class) //JWT 필터 등록
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement((session) -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //세션 설정
+                .build();
 
-        return http.build();
     }
 }
