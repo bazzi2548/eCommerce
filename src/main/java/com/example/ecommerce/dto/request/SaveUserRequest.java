@@ -10,4 +10,7 @@ public class SaveUserRequest {
     private String password;
     private String phoneNumber;
 
+    private String addressMain;
+    private String addressSub;
+    private String zipcode;
 }

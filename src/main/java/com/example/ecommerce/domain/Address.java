@@ -1,8 +1,11 @@
 package com.example.ecommerce.domain;
 
+import com.example.ecommerce.dto.request.SaveUserRequest;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class Address {
 
     @Id
@@ -14,9 +17,9 @@ public class Address {
     private User user;
 
     @Column(nullable = false)
-    private String address_main;
+    private String addressMain;
 
-    private String address_sub;
+    private String addressSub;
 
     @Column(nullable = false)
     private String zipcode;
@@ -25,4 +28,16 @@ public class Address {
 
     }
 
+    public Address(SaveUserRequest request) {
+        this.addressMain = request.getAddressMain();
+        this.addressSub = request.getAddressSub();
+        this.zipcode = request.getZipcode();
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+        if (!user.getAddresses().contains(this)) {
+            user.getAddresses().add(this);
+        }
+    }
 }

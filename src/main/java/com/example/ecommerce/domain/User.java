@@ -1,6 +1,7 @@
 package com.example.ecommerce.domain;
 
 import com.example.ecommerce.dto.request.SaveUserRequest;
+import com.example.ecommerce.dto.request.UpdateUserRequest;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -31,6 +32,7 @@ public class User {
     @Column(nullable = false)
     private String phoneNumber;
 
+    @Column(insertable = false)
     private String role;
 
     @CreationTimestamp
@@ -39,7 +41,7 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     private List<Address> addresses = new ArrayList<>();
 
     protected User() {
@@ -56,5 +58,10 @@ public class User {
         this.email = request.getEmail();
         this.password = bCryptPasswordEncoder.encode(request.getPassword());
         this.phoneNumber = request.getPhoneNumber();
+    }
+
+    public void update(UpdateUserRequest userInfo) {
+        this.password = userInfo.getPassword();
+        this.phoneNumber = userInfo.getPhoneNumber();
     }
 }

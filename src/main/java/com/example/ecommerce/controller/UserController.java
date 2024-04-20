@@ -1,7 +1,10 @@
 package com.example.ecommerce.controller;
 
 import com.example.ecommerce.dto.request.SaveUserRequest;
+import com.example.ecommerce.dto.request.UpdateUserRequest;
+import com.example.ecommerce.dto.response.MyPageResponse;
 import com.example.ecommerce.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -42,8 +45,12 @@ public class UserController {
     }
 
     @GetMapping("/my-page")
-    public String myPage(){
+    public MyPageResponse myPage(HttpServletRequest request) {
+        return userService.myPage(request);
+    }
 
-        return "OK";
+    @PatchMapping("/my-page")
+    public void updateUser(HttpServletRequest request, @RequestBody UpdateUserRequest updateInfo) {
+        userService.updateUser(request, updateInfo);
     }
 }
