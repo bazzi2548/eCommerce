@@ -60,8 +60,13 @@ public class User {
         this.phoneNumber = request.getPhoneNumber();
     }
 
-    public void update(UpdateUserRequest userInfo) {
-        this.password = userInfo.getPassword();
-        this.phoneNumber = userInfo.getPhoneNumber();
+    public void update(UpdateUserRequest userInfo, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        if (userInfo.getPassword() != null && !userInfo.getPassword().isEmpty()) {
+            this.password = bCryptPasswordEncoder.encode(userInfo.getPassword());
+        }
+
+        if (userInfo.getPhoneNumber() != null && !userInfo.getPhoneNumber().isEmpty()) {
+            this.phoneNumber = userInfo.getPhoneNumber();
+        }
     }
 }

@@ -45,12 +45,12 @@ public class UserController {
     }
 
     @GetMapping("/my-page")
-    public MyPageResponse myPage(HttpServletRequest request) {
-        return userService.myPage(request);
+    public MyPageResponse myPage(Authentication auth) {
+        return userService.myPage(auth);
     }
 
     @PatchMapping("/my-page")
-    public void updateUser(HttpServletRequest request, @RequestBody UpdateUserRequest updateInfo) {
-        userService.updateUser(request, updateInfo);
+    public void updateUser(Authentication auth, @RequestBody UpdateUserRequest updateInfo) {
+        userService.updateUser(auth, updateInfo);
     }
 }

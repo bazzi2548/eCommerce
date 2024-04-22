@@ -18,7 +18,7 @@ public class MyPageResponse {
         name = user.getName();
         phoneNumber = user.getPhoneNumber();
         role = user.getRole();
-        this.addresses = user.getAddresses()
+        addresses = user.getAddresses()
                 .stream()
                 .map(AddressDTO::new)
                 .toList();

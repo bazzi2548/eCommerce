@@ -8,6 +8,7 @@ import com.example.ecommerce.dto.response.MyPageResponse;
 import com.example.ecommerce.jwt.JWTUtil;
 import com.example.ecommerce.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,21 +39,16 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public MyPageResponse myPage(HttpServletRequest request) {
-        String access = request.getHeader("access");
-        String email = jwtUtil.getEmail(access);
-        User user = userRepository.findByEmail(email);
+    public MyPageResponse myPage(Authentication auth) {
+        User user = userRepository.findByEmail(auth.getName());
 
         return new MyPageResponse(user);
     }
 
 
-    public void updateUser(HttpServletRequest request, UpdateUserRequest updateInfo) {
-        String access = request.getHeader("access");
-        String email = jwtUtil.getEmail(access);
-        User user = userRepository.findByEmail(email);
-
-        user.update(updateInfo);
+    public void updateUser(Authentication auth, UpdateUserRequest updateInfo) {
+        User user = userRepository.findByEmail(auth.getName());
+        user.update(updateInfo, bCryptPasswordEncoder);
     }
 }
 
