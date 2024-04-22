@@ -32,5 +32,4 @@ public class GoodsController {
     public DetailGoodsResponse findGoods(@PathVariable Long id) {
         return goodsService.findGoods(id);
     }
-
 }
