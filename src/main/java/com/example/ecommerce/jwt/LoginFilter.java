@@ -43,25 +43,22 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         //유저 정보
         String email = authentication.getName();
-        System.out.println(email);
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
         //토큰 생성
-        String access = jwtUtil.createJwt("access", email, role, 600000L);
-        String refresh = jwtUtil.createJwt("refresh", email, role, 86400000L);
+        String access = jwtUtil.createJwt("access", email, role, 1800000L);
 
         //응답 설정
-        response.setHeader("access", access);
-        response.addCookie(createCookie("refresh", refresh));
+        response.addCookie(createCookie("access", access));
         response.setStatus(HttpStatus.OK.value());
     }
 
     private Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24 * 60 * 60);
+        cookie.setMaxAge(30 * 60);
         cookie.setHttpOnly(true);
 
         return cookie;

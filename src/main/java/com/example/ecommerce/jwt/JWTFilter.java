@@ -5,6 +5,7 @@ import com.example.ecommerce.dto.CustomUserDetails;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,14 +27,23 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         //헤더에서 access 키에 담긴 토큰을 꺼냄
-        String accessToken = request.getHeader("access");
+        String accessToken = null;
 
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("access")) {
+                accessToken = cookie.getValue();
+            }
+        }
         // 토큰이 없다면 다음 필터로 넘김
         if (accessToken == null) {
             filterChain.doFilter(request, response);
             return;
         }
-
         // 토큰 만료 여부 확인, 만료시 다음 필터로 넘기지 않음
         try {
             jwtUtil.isExpired(accessToken);
@@ -42,7 +52,6 @@ public class JWTFilter extends OncePerRequestFilter {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
-
         String category = jwtUtil.getCategory(accessToken);
 
         // 토큰이 access인지 확인 (발급시 payload에 명시)
@@ -63,7 +72,6 @@ public class JWTFilter extends OncePerRequestFilter {
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         // 세션에 사용자 등록
         SecurityContextHolder.getContext().setAuthentication(authToken);
-
         filterChain.doFilter(request, response);
     }
 }
