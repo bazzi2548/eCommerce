@@ -6,9 +6,9 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - ./db/mysql/data:/var/lib/mysql
-      - ./db/mysql/config:/etc/mysql/conf.d
-      - ./db/mysql/init:/docker-entrypoint-initdb.d
+      - ./database/mysql/data:/var/lib/mysql
+      - ./database/mysql/config:/etc/mysql/conf.d
+      - ./database/mysql/init:/docker-entrypoint-initdb.d
     command:
       - '--character-set-server=utf8mb4'
       - '--collation-server=utf8mb4_unicode_ci'
@@ -24,8 +24,8 @@ services:
     ports:
       - 6379:6379
     volumes:
-      - ./redis/data:/data
-      - ./redis/conf/redis.conf:/usr/local/conf/redis.conf
+      - ./database/redis/data:/data
+      - ./database/redis/conf/redis.conf:/usr/local/conf/redis.conf
     labels:
       - "name=redis"
       - "mode=standalone"
