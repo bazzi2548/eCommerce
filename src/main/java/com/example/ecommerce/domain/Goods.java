@@ -43,4 +43,8 @@ public class Goods {
         price = request.getPrice();
         stock = request.getStock();
     }
+
+    public void reduceStock(int stock) {
+        this.stock -= stock;
+    }
 }
