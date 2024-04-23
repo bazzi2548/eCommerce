@@ -12,6 +12,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.List;
 
 @Service
@@ -59,14 +62,27 @@ public class OrdersService {
 
     public void cancelOrders(Long ordersId) {
         Orders orders = ordersRepository.findById(ordersId).get();
-        if (orders.getStatus() == StatusEnum.주문완료) {
-            orders.setStatus(StatusEnum.주문취소);
-
-            List<OrdersGoods> goods = orderGoodsRepository.findByOrdersId(orders.getOrdersId());
-            increaseStock(goods);
-        } else {
+        if (orders.getStatus() != StatusEnum.주문완료) {
             throw new IllegalArgumentException("can't cancel orders");
         }
+        orders.setStatus(StatusEnum.취소완료);
+        List<OrdersGoods> goods = orderGoodsRepository.findByOrdersId(orders.getOrdersId());
+        increaseStock(goods);
+    }
+
+    public void returnOrders(Long ordersId) {
+        Orders orders = ordersRepository.findById(ordersId).get();
+        if (orders.getStatus() != StatusEnum.배송완료) {
+            throw new IllegalArgumentException("can't return orders");
+        }
+        LocalDate delivered = orders.getDeliveredAt().toLocalDate();
+        LocalDate now = LocalDateTime.now().toLocalDate();
+        Period diff = Period.between(delivered, now);
+
+        if (diff.getDays() > 1) {
+            throw new IllegalArgumentException("can't return orders");
+        }
+        orders.setStatus(StatusEnum.반품중);
     }
 
     private Orders makeOrders(List<Wishlist> wishlists) {

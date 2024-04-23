@@ -29,6 +29,8 @@ public class Orders {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    private LocalDateTime deliveredAt;
+
     protected Orders() {
     }
 
@@ -41,5 +43,9 @@ public class Orders {
 
     public void setStatus(StatusEnum status) {
         this.status = status;
+    }
+
+    public void setDeliveredAt(LocalDateTime deliveredAt) {
+        this.deliveredAt = deliveredAt;
     }
 }
