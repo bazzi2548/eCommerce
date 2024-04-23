@@ -14,7 +14,6 @@ public class Wishlist {
     @Column(nullable = false)
     private Long userId;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "goods_id")
     private Goods goods;
@@ -23,7 +22,6 @@ public class Wishlist {
     private int count;
 
     protected Wishlist() {
-
     }
 
     public Wishlist(Long userId, Goods goods, int count) {
@@ -35,5 +33,4 @@ public class Wishlist {
     public void updateCount(int count) {
         this.count = count;
     }
-
 }

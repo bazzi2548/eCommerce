@@ -47,4 +47,8 @@ public class Goods {
     public void reduceStock(int stock) {
         this.stock -= stock;
     }
+
+    public void increaseStock(int stock) {
+        this.stock += stock;
+    }
 }

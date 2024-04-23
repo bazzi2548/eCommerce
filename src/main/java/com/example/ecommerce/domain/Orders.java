@@ -3,7 +3,6 @@ package com.example.ecommerce.domain;
 import com.example.ecommerce.converter.StatusAttributeConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -40,4 +39,7 @@ public class Orders {
                 .sum();
     }
 
+    public void setStatus(StatusEnum status) {
+        this.status = status;
+    }
 }

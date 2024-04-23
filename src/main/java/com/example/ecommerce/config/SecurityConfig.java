@@ -51,7 +51,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/login", "/api/goods", "/api/goods/**", "/sign-up").permitAll()
                         .requestMatchers("/my-page","/wishlist", "/logout", "api/orders").hasAuthority("customer")
-                        .requestMatchers("/reissue").permitAll()
                         .anyRequest().authenticated()) //경로별 인가 작업
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class) //JWT 필터 등록
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class)

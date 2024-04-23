@@ -9,7 +9,7 @@ public class OrdersGoods {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long orderGoodsId;
+    private Long ordersGoodsId;
 
     private Long ordersId;
 

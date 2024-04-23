@@ -13,7 +13,6 @@ import com.example.ecommerce.dto.response.WishlistResponse;
 import com.example.ecommerce.repository.GoodsRepository;
 import com.example.ecommerce.repository.UserRepository;
 import com.example.ecommerce.repository.WishlistRepository;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.util.List;
 
 @Service
