@@ -19,7 +19,6 @@ public class Wishlist {
     @JoinColumn(name = "goods_id")
     private Goods goods;
 
-
     @Column(nullable = false)
     private int count;
 
@@ -32,4 +31,9 @@ public class Wishlist {
         this.goods = goods;
         this.count = count;
     }
+
+    public void updateCount(int count) {
+        this.count = count;
+    }
+
 }

@@ -46,9 +46,11 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable) //cors disable
                 .formLogin(AbstractHttpConfigurer::disable) //Form 로그인 방식 disable
                 .httpBasic(AbstractHttpConfigurer::disable) //http basic 인증 방식 disable
+                .logout((logout) -> logout.deleteCookies("access")
+                        .logoutSuccessUrl("/api/goods"))
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/", "/sign-up").permitAll()
-                        .requestMatchers("/my-page").hasAuthority("customer")
+                        .requestMatchers("/login", "/api/goods", "/api/goods/**", "/sign-up").permitAll()
+                        .requestMatchers("/my-page","/wishlist", "/logout", "api/orders").hasAuthority("customer")
                         .requestMatchers("/reissue").permitAll()
                         .anyRequest().authenticated()) //경로별 인가 작업
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class) //JWT 필터 등록

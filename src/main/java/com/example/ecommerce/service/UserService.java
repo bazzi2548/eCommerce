@@ -7,6 +7,7 @@ import com.example.ecommerce.domain.Wishlist;
 import com.example.ecommerce.dto.request.AddWishlistRequest;
 import com.example.ecommerce.dto.request.SaveUserRequest;
 import com.example.ecommerce.dto.request.UpdateUserRequest;
+import com.example.ecommerce.dto.request.UpdateWishlistRequest;
 import com.example.ecommerce.dto.response.MyPageResponse;
 import com.example.ecommerce.dto.response.WishlistResponse;
 import com.example.ecommerce.repository.GoodsRepository;
@@ -73,6 +74,7 @@ public class UserService {
         wishlistRepository.save(new Wishlist(user.getUserId(), goods, request.getCount()));
     }
 
+    @Transactional(readOnly = true)
     public List<WishlistResponse> getWishlist(Authentication auth) {
         User user = userRepository.findByEmail(auth.getName());
 
@@ -82,13 +84,22 @@ public class UserService {
                 .toList();
     }
 
-    public ResponseEntity<?> getWishlistGoods(long id) {
-        Long goodsId = wishlistRepository.findById(id).get().getGoods().getGoodsId();
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getWishlistGoods(long wishlistId) {
+        Long goodsId = wishlistRepository.findById(wishlistId).get().getGoods().getGoodsId();
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("/api/goods/"+goodsId));
 
         return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
     }
 
+    public void deleteWishlist(long wishlistId) {
+        wishlistRepository.deleteById(wishlistId);
+    }
+
+    public void updateWishlist(long wishlistId, UpdateWishlistRequest request) {
+        Wishlist wishlist = wishlistRepository.findById(wishlistId).get();
+        wishlist.updateCount(request.getCount());
+    }
 }
 

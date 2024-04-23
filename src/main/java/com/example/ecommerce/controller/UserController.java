@@ -3,6 +3,7 @@ package com.example.ecommerce.controller;
 import com.example.ecommerce.dto.request.AddWishlistRequest;
 import com.example.ecommerce.dto.request.SaveUserRequest;
 import com.example.ecommerce.dto.request.UpdateUserRequest;
+import com.example.ecommerce.dto.request.UpdateWishlistRequest;
 import com.example.ecommerce.dto.response.MyPageResponse;
 import com.example.ecommerce.dto.response.WishlistResponse;
 import com.example.ecommerce.service.UserService;
@@ -57,8 +58,20 @@ public class UserController {
     }
 
     @GetMapping("/wishlist/{id}")
-    public ResponseEntity<?> getWishlistGoods(@PathVariable long id) {
-        return userService.getWishlistGoods(id);
+    public ResponseEntity<?> getWishlistGoods(@PathVariable("id") long wishlistId) {
+        return userService.getWishlistGoods(wishlistId);
     }
+
+    @DeleteMapping("/wishlist/{id}")
+    public void deleteWishlist(@PathVariable("id") long wishlistId) {
+        userService.deleteWishlist(wishlistId);
+    }
+
+    @PatchMapping("/wishlist/{id}")
+    public void updateWishlist(@PathVariable("id") long wishlistId, @RequestBody UpdateWishlistRequest request) {
+        userService.updateWishlist(wishlistId, request);
+    }
+
+
 
 }
