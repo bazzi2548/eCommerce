@@ -28,20 +28,16 @@ public class OrderStatusSchedulerService {
 
     @Scheduled(cron = "0 0 0 * * *")
     public void setStatusShipping() {
-        LocalDateTime startTime = LocalDateTime.of(LocalDate.now().minusDays(1), LocalTime.of(0, 0, 0));
-        LocalDateTime endTime = LocalDateTime.of(LocalDate.now().minusDays(1), LocalTime.of(23, 59, 59));
-        List<Orders> orders = ordersRepository.findByStatusAndCreatedAtBetween(StatusEnum.주문완료, startTime, endTime);
+        List<Orders> orders = getOrders(StatusEnum.주문완료);
 
         for (Orders order : orders) {
             order.setStatus(StatusEnum.배송중);
         }
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "1 0 0 * * *")
     public void setStatusComplete() {
-        LocalDateTime startTime = LocalDateTime.of(LocalDate.now().minusDays(1), LocalTime.of(0, 0, 0));
-        LocalDateTime endTime = LocalDateTime.of(LocalDate.now().minusDays(1), LocalTime.of(23, 59, 59));
-        List<Orders> orders = ordersRepository.findByStatusAndCreatedAtBetween(StatusEnum.배송중, startTime, endTime);
+        List<Orders> orders = getOrders(StatusEnum.배송중);
 
         for (Orders order : orders) {
             order.setStatus(StatusEnum.배송완료);
@@ -49,11 +45,9 @@ public class OrderStatusSchedulerService {
         }
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "2 0 0 * * *")
     public void setStatusReturnComplete() {
-        LocalDateTime startTime = LocalDateTime.of(LocalDate.now().minusDays(1), LocalTime.of(0, 0, 0));
-        LocalDateTime endTime = LocalDateTime.of(LocalDate.now().minusDays(1), LocalTime.of(23, 59, 59));
-        List<Orders> orders = ordersRepository.findByStatusAndUpdatedAtBetween(StatusEnum.반품중, startTime, endTime);
+        List<Orders> orders = getOrders(StatusEnum.반품중);
 
         for (Orders order : orders) {
             order.setStatus(StatusEnum.반품완료);
@@ -67,5 +61,11 @@ public class OrderStatusSchedulerService {
         for (OrdersGoods good : goods) {
             good.getGoods().increaseStock(good.getCount());
         }
+    }
+
+    private List<Orders> getOrders(StatusEnum status) {
+        LocalDateTime startTime = LocalDateTime.of(LocalDate.now().minusDays(1), LocalTime.of(0, 0, 0));
+        LocalDateTime endTime = LocalDateTime.of(LocalDate.now().minusDays(1), LocalTime.of(23, 59, 59));
+        return ordersRepository.findByStatusAndUpdatedAtBetween(status, startTime, endTime);
     }
 }

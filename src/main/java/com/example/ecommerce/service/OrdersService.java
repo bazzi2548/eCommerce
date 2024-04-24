@@ -33,7 +33,6 @@ public class OrdersService {
         this.wishlistRepository = wishlistRepository;
     }
 
-
     public void requestOrders(OrdersRequest request) {
         List<Wishlist> wishlists = wishlistRepository.findAllById(request.getWishlists());
         Orders orders = makeOrders(wishlists);
@@ -65,6 +64,7 @@ public class OrdersService {
         if (orders.getStatus() != StatusEnum.주문완료) {
             throw new IllegalArgumentException("can't cancel orders");
         }
+
         orders.setStatus(StatusEnum.취소완료);
         List<OrdersGoods> goods = orderGoodsRepository.findByOrdersId(orders.getOrdersId());
         increaseStock(goods);
