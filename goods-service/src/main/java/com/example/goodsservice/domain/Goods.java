@@ -23,10 +23,6 @@ public class Goods {
     @Column(nullable = false)
     private int stock;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
-
     @Column(nullable = false)
     @ColumnDefault("false")
     private boolean checkSoldOut;

@@ -1,6 +1,7 @@
 package com.example.goodsservice.controller;
 
 
+import com.example.goodsservice.client.UserClient;
 import com.example.goodsservice.dto.request.SaveGoodsRequest;
 import com.example.goodsservice.dto.response.DetailGoodsResponse;
 import com.example.goodsservice.dto.response.GoodsResponse;
@@ -10,13 +11,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/goods")
 public class GoodsController {
 
     private final GoodsService goodsService;
+    private final UserClient userClient;
 
-    public GoodsController(GoodsService goodsService) {
+    public GoodsController(GoodsService goodsService, UserClient userClient) {
         this.goodsService = goodsService;
+        this.userClient = userClient;
     }
 
     @PostMapping("/goods")

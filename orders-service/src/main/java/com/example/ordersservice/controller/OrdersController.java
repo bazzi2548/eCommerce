@@ -4,13 +4,12 @@ import com.example.ordersservice.dto.request.OrdersRequest;
 import com.example.ordersservice.dto.response.OrderGoodsResponse;
 import com.example.ordersservice.dto.response.OrdersResponse;
 import com.example.ordersservice.service.OrdersService;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/order")
 public class OrdersController {
     private final OrdersService ordersService;
 
@@ -26,8 +25,8 @@ public class OrdersController {
 
     // 주문 조회
     @GetMapping("/orders")
-    public List<OrdersResponse> getOrders(Authentication auth) {
-        return ordersService.getOrders(auth);
+    public List<OrdersResponse> getOrders(@CookieValue("access") String token) {
+        return ordersService.getOrders(token);
     }
 
     // 주문 상세 조회

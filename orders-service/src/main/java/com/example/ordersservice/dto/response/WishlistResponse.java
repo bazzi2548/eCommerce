@@ -11,7 +11,7 @@ public class WishlistResponse {
 
     public WishlistResponse(Wishlist wishlist) {
         wishlistId = wishlist.getWishlistId();
-        name = wishlist.getGoods().getName();
+        name = wishlist.getGoodsName();
         count = wishlist.getCount();
     }
 }

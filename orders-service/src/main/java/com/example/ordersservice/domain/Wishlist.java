@@ -14,9 +14,9 @@ public class Wishlist {
     @Column(nullable = false)
     private Long userId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "goods_id")
-    private Goods goods;
+    private Long goodsId;
+
+    private String goodsName;
 
     @Column(nullable = false)
     private int count;
@@ -24,9 +24,10 @@ public class Wishlist {
     protected Wishlist() {
     }
 
-    public Wishlist(Long userId, Goods goods, int count) {
+    public Wishlist(Long userId, Long goodsId, String goodsName, int count) {
         this.userId = userId;
-        this.goods = goods;
+        this.goodsId = goodsId;
+        this.goodsName = goodsName;
         this.count = count;
     }
 

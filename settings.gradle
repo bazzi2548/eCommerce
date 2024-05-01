@@ -3,3 +3,5 @@ rootProject.name = 'eCommerce'
 include "user-service"
 include "orders-service"
 include "goods-service"
+include "discovery-server"
+include "gateway-service"

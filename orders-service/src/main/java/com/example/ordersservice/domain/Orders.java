@@ -34,11 +34,9 @@ public class Orders {
     protected Orders() {
     }
 
-    public Orders(List<Wishlist> wishlists) {
+    public Orders(List<Wishlist> wishlists, Long totalPrice) {
         userId = wishlists.get(0).getUserId();
-        totalPrice = wishlists.stream()
-                .mapToLong(wishlist -> wishlist.getCount() * wishlist.getGoods().getPrice())
-                .sum();
+        this.totalPrice = totalPrice;
     }
 
     public void setStatus(StatusEnum status) {

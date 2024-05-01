@@ -49,8 +49,9 @@ public class SecurityConfig {
                 .logout((logout) -> logout.deleteCookies("access")
                         .logoutSuccessUrl("/api/goods"))
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/api/goods", "/api/goods/**", "/sign-up").permitAll()
-                        .requestMatchers("/my-page","/wishlist", "/logout", "api/orders").hasAuthority("customer")
+//                        .requestMatchers("/login", "/api/sign-up", "/api/goods/**").permitAll()
+                        .requestMatchers("/**").permitAll()
+//                        .requestMatchers("/api/user/my-page","/wishlist", "/logout", "api/orders").hasAuthority("customer")
                         .anyRequest().authenticated()) //경로별 인가 작업
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class) //JWT 필터 등록
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class)

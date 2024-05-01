@@ -11,7 +11,7 @@ public class OrderGoodsResponse {
 
     public OrderGoodsResponse(OrdersGoods ordersGoods) {
         ordersGoodsId = ordersGoods.getOrdersGoodsId();
-        goodsName = ordersGoods.getGoods().getName();
+        goodsName = ordersGoods.getGoodsName();
         count = ordersGoods.getCount();
     }
 }

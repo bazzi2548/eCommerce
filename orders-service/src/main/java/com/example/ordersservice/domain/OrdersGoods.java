@@ -13,17 +13,18 @@ public class OrdersGoods {
 
     private Long ordersId;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "goods_id")
-    private Goods goods;
+    private Long goodsId;
+
+    private String goodsName;
 
     private int count;
 
     protected OrdersGoods() {}
 
-    public OrdersGoods(Long ordersId, Goods goods, int count) {
+    public OrdersGoods(Long ordersId, Long goodsId, String goodsName, int count) {
         this.ordersId = ordersId;
-        this.goods = goods;
+        this.goodsId = goodsId;
+        this.goodsName = goodsName;
         this.count = count;
     }
 }

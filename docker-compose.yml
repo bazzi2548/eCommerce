@@ -1,19 +1,55 @@
 version: '3.9'
 services:
-  mysql:
+  user-service:
     image: mysql:8.3.0
-    container_name: mysql_container
+    container_name: mysql_user
     ports:
       - 3306:3306
     volumes:
-      - ./database/mysql/data:/var/lib/mysql
-      - ./database/mysql/config:/etc/mysql/conf.d
-      - ./database/mysql/init:/docker-entrypoint-initdb.d
+      - ./database/user/mysql/data:/var/lib/mysql
+      - ./database/user/mysql/config:/etc/mysql/conf.d
+      - ./database/user/mysql/init:/docker-entrypoint-initdb.d
     command:
       - '--character-set-server=utf8mb4'
       - '--collation-server=utf8mb4_unicode_ci'
     environment:
-      MYSQL_DATABASE: ecommerce
+      MYSQL_DATABASE: userservice
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: '%'
+    restart: always
+
+  goods-service:
+    image: mysql:8.3.0
+    container_name: mysql_goods
+    ports:
+      - 3307:3306
+    volumes:
+      - ./database/goods/mysql/data:/var/lib/mysql
+      - ./database/goods/mysql/config:/etc/mysql/conf.d
+      - ./database/goods/mysql/init:/docker-entrypoint-initdb.d
+    command:
+      - '--character-set-server=utf8mb4'
+      - '--collation-server=utf8mb4_unicode_ci'
+    environment:
+      MYSQL_DATABASE: goodsservice
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: '%'
+    restart: always
+
+  order-service:
+    image: mysql:8.3.0
+    container_name: mysql-order
+    ports:
+      - 3308:3306
+    volumes:
+      - ./database/order/mysql/data:/var/lib/mysql
+      - ./database/order/mysql/config:/etc/mysql/conf.d
+      - ./database/order/mysql/init:/docker-entrypoint-initdb.d
+    command:
+      - '--character-set-server=utf8mb4'
+      - '--collation-server=utf8mb4_unicode_ci'
+    environment:
+      MYSQL_DATABASE: orderservice
       MYSQL_ROOT_PASSWORD: root
       MYSQL_ROOT_HOST: '%'
     restart: always
@@ -30,4 +66,3 @@ services:
       - "name=redis"
       - "mode=standalone"
     restart: always
-

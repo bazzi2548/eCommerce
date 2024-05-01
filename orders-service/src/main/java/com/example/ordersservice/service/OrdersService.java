@@ -1,14 +1,17 @@
 package com.example.ordersservice.service;
 
-import com.example.ordersservice.domain.*;
+import com.example.ordersservice.client.GoodsClient;
+import com.example.ordersservice.client.UserClient;
+import com.example.ordersservice.domain.Orders;
+import com.example.ordersservice.domain.OrdersGoods;
+import com.example.ordersservice.domain.StatusEnum;
+import com.example.ordersservice.domain.Wishlist;
 import com.example.ordersservice.dto.request.OrdersRequest;
 import com.example.ordersservice.dto.response.OrderGoodsResponse;
 import com.example.ordersservice.dto.response.OrdersResponse;
 import com.example.ordersservice.repository.OrderGoodsRepository;
 import com.example.ordersservice.repository.OrdersRepository;
-import com.example.ordersservice.repository.UserRepository;
 import com.example.ordersservice.repository.WishlistRepository;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,16 +24,18 @@ import java.util.List;
 @Transactional
 public class OrdersService {
 
-    private final UserRepository userRepository;
+    private final UserClient userClient;
     private final OrdersRepository ordersRepository;
     private final OrderGoodsRepository orderGoodsRepository;
     private final WishlistRepository wishlistRepository;
+    private final GoodsClient goodsClient;
 
-    public OrdersService(UserRepository userRepository, OrdersRepository ordersRepository, OrderGoodsRepository orderGoodsRepository, WishlistRepository wishlistRepository) {
-        this.userRepository = userRepository;
+    public OrdersService(UserClient userClient, OrdersRepository ordersRepository, OrderGoodsRepository orderGoodsRepository, WishlistRepository wishlistRepository, GoodsClient goodsClient) {
+        this.userClient = userClient;
         this.ordersRepository = ordersRepository;
         this.orderGoodsRepository = orderGoodsRepository;
         this.wishlistRepository = wishlistRepository;
+        this.goodsClient = goodsClient;
     }
 
     public void requestOrders(OrdersRequest request) {
@@ -43,9 +48,9 @@ public class OrdersService {
         deleteWishlist(wishlists);
     }
 
-    public List<OrdersResponse> getOrders(Authentication auth) {
-        User user = userRepository.findByEmail(auth.getName());
-        List<Orders> orders = ordersRepository.findByUserId(user.getUserId());
+    public List<OrdersResponse> getOrders(String token) {
+        Long userId = userClient.findLoginUserId(token);
+        List<Orders> orders = ordersRepository.findByUserId(userId);
 
         return orders.stream()
                 .map(OrdersResponse::new)
@@ -86,7 +91,11 @@ public class OrdersService {
     }
 
     private Orders makeOrders(List<Wishlist> wishlists) {
-        Orders orders = new Orders(wishlists);
+        Long totalPrice = wishlists.stream()
+                .mapToLong(wishlist -> wishlist.getCount() * goodsClient.getPrice(wishlist.getGoodsId()))
+                .sum();
+
+        Orders orders = new Orders(wishlists, totalPrice);
         reduceStock(wishlists);
         return orders;
     }
@@ -97,19 +106,19 @@ public class OrdersService {
 
     private List<OrdersGoods> makeOrderGoods(List<Wishlist> wishlists, Orders orders) {
         return wishlists.stream()
-                .map(wishlist -> new OrdersGoods(orders.getOrdersId(), wishlist.getGoods(), wishlist.getCount()))
+                .map(wishlist -> new OrdersGoods(orders.getOrdersId(), wishlist.getGoodsId(), wishlist.getGoodsName(), wishlist.getCount()))
                 .toList();
     }
 
     private void reduceStock(List<Wishlist> wishlists) {
         for (Wishlist wishlist : wishlists) {
-            wishlist.getGoods().reduceStock(wishlist.getCount());
+            goodsClient.reduceGoods(wishlist.getGoodsId(), wishlist.getCount());
         }
     }
 
     private void increaseStock(List<OrdersGoods> goods) {
         for (OrdersGoods good : goods) {
-            good.getGoods().increaseStock(good.getCount());
+            goodsClient.increaseGoods(good.getGoodsId(), good.getCount());
         }
     }
 }

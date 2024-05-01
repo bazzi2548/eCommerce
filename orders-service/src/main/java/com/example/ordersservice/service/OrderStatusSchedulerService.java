@@ -1,5 +1,6 @@
 package com.example.ordersservice.service;
 
+import com.example.ordersservice.client.GoodsClient;
 import com.example.ordersservice.domain.Orders;
 import com.example.ordersservice.domain.OrdersGoods;
 import com.example.ordersservice.domain.StatusEnum;
@@ -20,10 +21,11 @@ public class OrderStatusSchedulerService {
 
     private final OrdersRepository ordersRepository;
     private final OrderGoodsRepository orderGoodsRepository;
-    
-    public OrderStatusSchedulerService(OrdersRepository ordersRepository, OrderGoodsRepository orderGoodsRepository) {
+    private final GoodsClient goodsClient;
+    public OrderStatusSchedulerService(OrdersRepository ordersRepository, OrderGoodsRepository orderGoodsRepository, GoodsClient goodsClient) {
         this.ordersRepository = ordersRepository;
         this.orderGoodsRepository = orderGoodsRepository;
+        this.goodsClient = goodsClient;
     }
 
     @Scheduled(cron = "0 0 0 * * *")
@@ -59,7 +61,7 @@ public class OrderStatusSchedulerService {
     private void increaseStock(Long ordersId) {
         List<OrdersGoods> goods = orderGoodsRepository.findByOrdersId(ordersId);
         for (OrdersGoods good : goods) {
-            good.getGoods().increaseStock(good.getCount());
+            goodsClient.increaseGoods(good.getGoodsId(), good.getCount());
         }
     }
 
