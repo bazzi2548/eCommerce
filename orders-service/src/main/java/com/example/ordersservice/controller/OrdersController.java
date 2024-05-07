@@ -4,6 +4,9 @@ import com.example.ordersservice.dto.request.OrdersRequest;
 import com.example.ordersservice.dto.response.OrderGoodsResponse;
 import com.example.ordersservice.dto.response.OrdersResponse;
 import com.example.ordersservice.service.OrdersService;
+import com.example.ordersservice.service.SQSService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,15 +14,19 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/order")
 public class OrdersController {
-    private final OrdersService ordersService;
 
-    public OrdersController(OrdersService ordersService) {
+    private final OrdersService ordersService;
+    private final SQSService sqsService;
+
+    @Autowired
+    public OrdersController(OrdersService ordersService, SQSService sqsService) {
         this.ordersService = ordersService;
+        this.sqsService = sqsService;
     }
 
     // 주문 요청
     @PostMapping("/orders")
-    public void requestOrders(@RequestBody OrdersRequest request) {
+    public void requestOrders(@RequestBody OrdersRequest request) throws JsonProcessingException {
         ordersService.requestOrders(request);
     }
 
@@ -47,4 +54,10 @@ public class OrdersController {
         ordersService.returnOrders(orders_id);
     }
 
+
+    //메세지 큐 테스트
+    @PostMapping("/message")
+    public void sendMessage(@RequestBody String message) {
+        sqsService.sendMessage(message);
+    }
 }

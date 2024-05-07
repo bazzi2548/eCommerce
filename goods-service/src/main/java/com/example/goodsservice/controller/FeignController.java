@@ -20,6 +20,12 @@ public class FeignController {
         return feignService.findGoodsId(id);
     }
 
+    @GetMapping("/uploadStock")
+    void uploadStock(@RequestParam("id") Long id) {
+        feignService.uploadStock(id);
+    }
+
+
     @GetMapping("/reduceGoods")
     void reduceGoods(@RequestParam("id") Long id, @RequestParam("count") int count) {
         feignService.reduceGoods(id, count);

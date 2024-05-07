@@ -1,5 +1,6 @@
 package com.example.ordersservice.service;
 
+import com.example.coreredis.service.RedisService;
 import com.example.ordersservice.client.GoodsClient;
 import com.example.ordersservice.client.UserClient;
 import com.example.ordersservice.domain.Orders;
@@ -12,6 +13,7 @@ import com.example.ordersservice.dto.response.OrdersResponse;
 import com.example.ordersservice.repository.OrderGoodsRepository;
 import com.example.ordersservice.repository.OrdersRepository;
 import com.example.ordersservice.repository.WishlistRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,16 +31,18 @@ public class OrdersService {
     private final OrderGoodsRepository orderGoodsRepository;
     private final WishlistRepository wishlistRepository;
     private final GoodsClient goodsClient;
+    private final RedisService redisService;
 
-    public OrdersService(UserClient userClient, OrdersRepository ordersRepository, OrderGoodsRepository orderGoodsRepository, WishlistRepository wishlistRepository, GoodsClient goodsClient) {
+    public OrdersService(UserClient userClient, OrdersRepository ordersRepository, OrderGoodsRepository orderGoodsRepository, WishlistRepository wishlistRepository, GoodsClient goodsClient, RedisService redisService) {
         this.userClient = userClient;
         this.ordersRepository = ordersRepository;
         this.orderGoodsRepository = orderGoodsRepository;
         this.wishlistRepository = wishlistRepository;
         this.goodsClient = goodsClient;
+        this.redisService = redisService;
     }
 
-    public void requestOrders(OrdersRequest request) {
+    public void requestOrders(OrdersRequest request) throws JsonProcessingException {
         List<Wishlist> wishlists = wishlistRepository.findAllById(request.getWishlists());
         Orders orders = makeOrders(wishlists);
         ordersRepository.save(orders);
@@ -90,14 +94,13 @@ public class OrdersService {
         orders.setStatus(StatusEnum.반품중);
     }
 
-    private Orders makeOrders(List<Wishlist> wishlists) {
+    private Orders makeOrders(List<Wishlist> wishlists){
         Long totalPrice = wishlists.stream()
                 .mapToLong(wishlist -> wishlist.getCount() * goodsClient.getPrice(wishlist.getGoodsId()))
                 .sum();
 
-        Orders orders = new Orders(wishlists, totalPrice);
         reduceStock(wishlists);
-        return orders;
+        return new Orders(wishlists, totalPrice);
     }
 
     private void deleteWishlist(List<Wishlist> wishlists) {
@@ -112,7 +115,19 @@ public class OrdersService {
 
     private void reduceStock(List<Wishlist> wishlists) {
         for (Wishlist wishlist : wishlists) {
-            goodsClient.reduceGoods(wishlist.getGoodsId(), wishlist.getCount());
+            String key = "stock:"+wishlist.getGoodsId();
+            Integer readStock = redisService.readStock(key);
+            if (readStock == null) {
+                goodsClient.uploadStock(wishlist.getGoodsId());
+                readStock = redisService.readStock(key);
+            }
+
+            readStock -= wishlist.getCount();
+            if (readStock < 0) {
+                throw new IllegalArgumentException("can't reduce stock");
+            }
+
+            redisService.saveStock(key, readStock);
         }
     }
 

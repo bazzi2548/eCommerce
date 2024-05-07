@@ -10,6 +10,9 @@ public interface GoodsClient {
     @GetMapping("/api/feign/goodsId")
     boolean findGoodsId(@RequestParam("id") Long id);
 
+    @GetMapping("/api/feign/uploadStock")
+    void uploadStock(@RequestParam("id") Long id);
+
     @GetMapping("/api/feign/reduceGoods")
     void reduceGoods(@RequestParam("id") Long id, @RequestParam("count") int count);
 
