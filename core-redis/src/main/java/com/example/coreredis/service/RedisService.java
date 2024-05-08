@@ -3,6 +3,9 @@ package com.example.coreredis.service;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
 @Service
 public class RedisService {
 
@@ -13,14 +16,23 @@ public class RedisService {
     }
 
     public Integer readStock(String key) {
-        System.out.println("key = " + key);
-        return redisTemplate.opsForValue().get(key);
+        Integer stock = redisTemplate.opsForValue().get(key);
+        if (stock == null) {
+            return null;
+        }
+        redisTemplate.expire(key, 60, TimeUnit.MINUTES);
+        return stock;
     }
 
     public void saveStock(String key, Integer value) {
-        System.out.println("key: " + key + " value: " + value);
-
-        redisTemplate.opsForValue().set(key, value);
+        redisTemplate.opsForValue().set(key, value, 60, TimeUnit.MINUTES);
     }
 
+    public Set<String> getKeys(){
+        return redisTemplate.keys("stock:*");
+    }
+
+    public Integer scheduling(String key) {
+        return redisTemplate.opsForValue().get(key);
+    }
 }

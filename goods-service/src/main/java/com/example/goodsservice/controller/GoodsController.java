@@ -5,6 +5,7 @@ import com.example.goodsservice.client.UserClient;
 import com.example.goodsservice.dto.request.SaveGoodsRequest;
 import com.example.goodsservice.dto.response.DetailGoodsResponse;
 import com.example.goodsservice.dto.response.GoodsResponse;
+import com.example.goodsservice.dto.response.RemainGoodsResponse;
 import com.example.goodsservice.service.GoodsService;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,5 +36,10 @@ public class GoodsController {
     @GetMapping("/goods/{id}")
     public DetailGoodsResponse findGoods(@PathVariable Long id) {
         return goodsService.findGoods(id);
+    }
+
+    @GetMapping("/remain/{id}")
+    public RemainGoodsResponse findRemain(@PathVariable Long id) {
+        return goodsService.findRemain(id);
     }
 }

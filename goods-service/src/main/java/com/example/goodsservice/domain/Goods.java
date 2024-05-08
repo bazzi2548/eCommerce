@@ -40,6 +40,10 @@ public class Goods {
         stock = request.getStock();
     }
 
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
     public void reduceStock(int stock) {
         this.stock -= stock;
     }
