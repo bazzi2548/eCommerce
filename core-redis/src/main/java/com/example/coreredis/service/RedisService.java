@@ -1,8 +1,11 @@
 package com.example.coreredis.service;
 
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -29,7 +32,15 @@ public class RedisService {
     }
 
     public Set<String> getKeys(){
-        return redisTemplate.keys("stock:*");
+        Set<String> keys = new HashSet<>();
+        ScanOptions options = ScanOptions.scanOptions().match("stock:*").build();
+        Cursor<byte[]> cursor = redisTemplate.getConnectionFactory().getConnection().scan(options);
+
+        while (cursor.hasNext()) {
+            keys.add(new String(cursor.next()));
+        }
+
+        return keys;
     }
 
     public Integer scheduling(String key) {
