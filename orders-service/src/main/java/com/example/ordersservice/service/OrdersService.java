@@ -13,7 +13,6 @@ import com.example.ordersservice.dto.response.OrdersResponse;
 import com.example.ordersservice.repository.OrderGoodsRepository;
 import com.example.ordersservice.repository.OrdersRepository;
 import com.example.ordersservice.repository.WishlistRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +41,7 @@ public class OrdersService {
         this.redisService = redisService;
     }
 
-    public void requestOrders(OrdersRequest request) throws JsonProcessingException {
+    public void requestOrders(OrdersRequest request) {
         List<Wishlist> wishlists = wishlistRepository.findAllById(request.getWishlists());
         Orders orders = makeOrders(wishlists);
         ordersRepository.save(orders);
@@ -94,12 +93,12 @@ public class OrdersService {
         orders.setStatus(StatusEnum.반품중);
     }
 
-    private Orders makeOrders(List<Wishlist> wishlists){
+    private Orders makeOrders(List<Wishlist> wishlists) {
+        reduceStock(wishlists);
         Long totalPrice = wishlists.stream()
                 .mapToLong(wishlist -> wishlist.getCount() * goodsClient.getPrice(wishlist.getGoodsId()))
                 .sum();
 
-        reduceStock(wishlists);
         return new Orders(wishlists, totalPrice);
     }
 
@@ -115,25 +114,32 @@ public class OrdersService {
 
     private void reduceStock(List<Wishlist> wishlists) {
         for (Wishlist wishlist : wishlists) {
-            String key = "stock:"+wishlist.getGoodsId();
-            Integer readStock = redisService.readStock(key);
-            if (readStock == null) {
+            String key = "stock:" + wishlist.getGoodsId();
+            int count = wishlist.getCount();
+            Long stock = redisService.reduceStock(key, count);
+
+            if (stock == null) {
                 goodsClient.uploadStock(wishlist.getGoodsId());
-                readStock = redisService.readStock(key);
+                stock = redisService.reduceStock(key, count);
             }
 
-            readStock -= wishlist.getCount();
-            if (readStock < 0) {
-                throw new IllegalArgumentException("can't reduce stock");
+            if (stock < 0) {
+                throw new IllegalArgumentException("Can't Order for goodsId: " + wishlist.getGoodsId());
             }
-
-            redisService.saveStock(key, readStock);
         }
     }
 
     private void increaseStock(List<OrdersGoods> goods) {
         for (OrdersGoods good : goods) {
-            goodsClient.increaseGoods(good.getGoodsId(), good.getCount());
+            String key = "stock:" + good.getGoodsId();
+            int count = good.getCount();
+            Long stock = redisService.increaseStock(key, count);
+
+            if (stock == null) {
+                goodsClient.uploadStock(good.getGoodsId());
+                redisService.increaseStock(key, count);
+            }
         }
     }
 }
+
