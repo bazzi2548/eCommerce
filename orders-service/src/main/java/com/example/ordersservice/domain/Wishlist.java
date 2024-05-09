@@ -14,8 +14,10 @@ public class Wishlist {
     @Column(nullable = false)
     private Long userId;
 
+    @Column(nullable = false)
     private Long goodsId;
 
+    @Column(nullable = false)
     private String goodsName;
 
     @Column(nullable = false)
