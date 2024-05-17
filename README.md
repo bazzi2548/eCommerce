@@ -1,13 +1,16 @@
 # eCommerce 프로젝트
+
 ## 🖥️ 프로젝트 소개
 eCommerce 플랫폼으로 원하는 상품을 위시리스트에 담아 다수의 사용자가 동시에 편리하게 구매할 수 있는 프로젝트 입니다.
 
 ## 📚 API 문서
-[ API (POSTMAN) ](#-https://documenter.getpostman.com/view/31375689/2sA3JT2JFy)
+[ API (POSTMAN) ](https://documenter.getpostman.com/view/31375689/2sA3JT2JFy)
+
 ## 📌 주요 기능
 - 유저 관리: 사용자는 회원가입과, 마이페이지를 통해 개인정보를 수정 할 수 있습니다.
 - 상품 관리: 상품을 등록하고, 상품에 대해 상세한 정보를 확인할 수 있습니다.
 - 주문 기능: 많은 유저들이 동시에 주문을 하더라도 문제없이 주문 할 수 있습니다.
+
 ## 🛠 기술 스택
 - Spring Boot
 - Spring Security
