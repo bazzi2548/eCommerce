@@ -38,9 +38,7 @@ public class FeignController {
 
     @GetMapping("/getPrice")
     Long getPrice(@RequestParam("id") Long id) {
-        System.out.println(id);
         Long price = feignService.getPrice(id);
-        System.out.println("price = " + price);
         return price;
     }
 }

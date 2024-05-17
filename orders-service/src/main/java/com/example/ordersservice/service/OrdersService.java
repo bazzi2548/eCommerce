@@ -134,6 +134,7 @@ public class OrdersService {
             String key = "stock:" + good.getGoodsId();
             int count = good.getCount();
             Long stock = redisService.increaseStock(key, count);
+            System.out.println(stock);
 
             if (stock == null) {
                 goodsClient.uploadStock(good.getGoodsId());

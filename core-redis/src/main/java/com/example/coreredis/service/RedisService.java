@@ -32,7 +32,9 @@ public class RedisService {
     }
 
     public void saveStock(String key, Integer value) {
-        redisTemplate.opsForValue().set(key, value, 60, TimeUnit.MINUTES);
+        if (readStock(key) == null) {
+            redisTemplate.opsForValue().set(key, value, 60, TimeUnit.MINUTES);
+        }
     }
 
     public Set<String> getKeys(){
@@ -76,7 +78,7 @@ public class RedisService {
                         "if current_stock == nil then return nil end " +
                         "local new_stock = current_stock + count " +
                         "redis.call('SET', key, new_stock) " +
-                        "return new_stock end";
+                        "return new_stock";
 
         return luaScriptExecutor.executeLuaScript(luaScript, key, count);
     }

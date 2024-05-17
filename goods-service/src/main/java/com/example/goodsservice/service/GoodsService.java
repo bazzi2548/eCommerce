@@ -47,7 +47,6 @@ public class GoodsService {
         String key = "stock:" + id;
         Integer stock = redisService.readStock(key);
         if (stock == null) {
-            System.out.println("hello");
             Goods goods = goodsRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("goods doesn't exist"));
             stock = goods.getStock();
